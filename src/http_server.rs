@@ -50,7 +50,7 @@ pub trait HttpServiceFactory: Send + Sized + 'static {
                     // t_c!(stream.set_nodelay(true));
                     let service = self.new_service();
                     go!(
-                        move || if let Err(e) = each_connection_loop(&mut stream, service) {
+                        move || if let Err(e) = each_connection_loop(stream, service) {
                             error!("service err = {:?}", e);
                             stream.shutdown(std::net::Shutdown::Both).ok();
                         }
@@ -199,7 +199,7 @@ impl<T: HttpService + Clone + Send + Sync + 'static> HttpServer<T> {
                     // t_c!(stream.set_nodelay(true));
                     let service = service.clone();
                     go!(
-                        move || if let Err(e) = each_connection_loop(&mut stream, service) {
+                        move || if let Err(e) = each_connection_loop(stream, service) {
                             error!("service err = {:?}", e);
                             stream.shutdown(std::net::Shutdown::Both).ok();
                         }
